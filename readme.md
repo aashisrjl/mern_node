@@ -36,3 +36,33 @@ yo much add your link of database to connectionstring variable
         - you can see your data in json format
         - you can use postman to test your api
 
+        ### database crud
+        - router.create({}) // insert a data into the  table 
+        - router.find(); 
+        - router.findById(id)
+        - router.findByIdAndUpdate(id,{username = username },{new:true});
+        - router.findByIdAndDelete(id);
+
+        ### Types of APIS
+
+        - rest api (path are different in different different verbs)
+        - restful api (path are same in all verbs )
+        Note : for the good practice we have to use restful api 
+
+      ### File handeling
+      - multer is a middleware that helps to handle multipart/form-data, which is primarily used for uploading
+      files. It is written on top of busboy and is designed to handle the complexities of multipart
+      forms. Multer adds a body object and a file or files object to the request object.
+      - `npm install multer`
+      - const multer = require('multer');
+      - const upload = multer({ dest: './uploads/' });
+      - router.post('/upload', upload.single('file'), (req, res) => {
+        res.send(`/${req.file.path}`)
+        - });
+        - router.post('/upload', upload.array('files', 12), (req, res))
+        - res.send(req.files.map(file => `/${file.path}`
+        - ));
+
+ ## Documentation of apis 
+        > https://documenter.getpostman.com/view/35190210/2sA3XJjQCS
+

@@ -12,7 +12,7 @@ const bookSchema = new Schema({
     isbnNumber:{
         type: Number
     },
-    autherName:{
+    authorName:{
         type: String
     },
     publishedAt:{
@@ -21,7 +21,8 @@ const bookSchema = new Schema({
     publication:{
         type: String
     }
+  
 
 })
-const Book = mongoose.model('Book',bookSchema)
+const Book = mongoose.model('Book',bookSchema);
 module.exports = Book;
