@@ -15,6 +15,7 @@ const upload = multer({storage : storage})
 
 // use req.body 
 app.use(express.json());
+app.use(express.static("./storage/")); 
 
 // connnection to database 
 connectToDatabase();
@@ -27,6 +28,12 @@ app.get('/',(req,res)=>{
 
 // create a post api 
 app.post("/book",upload.single('image'), async(req,res)=>{
+    let fileName = req.file.filename
+    if(!req.file){
+        fileName ="https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=";
+    }else{
+        fileName = "http://localhost:3000/" + fileName; 
+    }
     const {bookName,publication, bookPrice, isbnNumber, authorName, publishedAt} = req.body;
     await Book.create({
         bookName,
@@ -34,7 +41,9 @@ app.post("/book",upload.single('image'), async(req,res)=>{
         isbnNumber,
         authorName,
         publishedAt,
-        publication
+        publication,
+        imageUrl:fileName
+
     })
     res.status(201).json({
         "message": "Book added successfully"
