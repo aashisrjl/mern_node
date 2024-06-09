@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
         cb(null,'./storage'); // error , success
     },
     filename: function(req,file,cb){
-        cb(null,file.originalname);
+        cb(null,`Aashis-${file.originalname}`);
     }
 
 })

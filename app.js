@@ -5,6 +5,9 @@ const port = 3000;
 // require database for connect the database 
 const connectToDatabase = require('./database/index.js');
 
+// to perform with file search delete 
+const fs = require('fs');
+
 // require database table to access in this project 
 const Book = require('./model/bookModel.js');
 const User = require('./model/userModel.js');
@@ -50,7 +53,7 @@ app.post("/book",upload.single('image'), async(req,res)=>{
     })
 })
 
-// // post opearation of user 
+// // ------------- post operation of user ------------//
 // app.post("/user", async(req,res)=>{
 //     const {name,username,email,password,role,age} = req.body
 //     await User.create({
@@ -66,7 +69,7 @@ app.post("/book",upload.single('image'), async(req,res)=>{
 //     })
 // })
 
-// // ---------- read one  user using username --------------------------------
+// // ---------- read one  user using username ------------------------//
 // app.get("/user/:username",async(req,res)=>{
 //     const username = req.params.username;
 //     const user = await User.findOne({username});
@@ -75,7 +78,7 @@ app.post("/book",upload.single('image'), async(req,res)=>{
 //         data : user
 //     })
 // })
-// // -----  all user read ---------------
+// // ---------------  all user read ---------------------------//
 // app.get("/user",async(req,res)=>{
 //     const users = await User.find(); // return array
     
@@ -83,6 +86,35 @@ app.post("/book",upload.single('image'), async(req,res)=>{
 //         message: "users fetch successfully",
 //         data: users
 //     });
+// })
+
+//----------user delete operation -----------------------------//
+// app.delete("/user/:id",async(req,res)=>{
+//     const id = req.params.id;
+//     await User.findByIdAndDelete(id);
+
+//     res.status(200).json({
+//         message: "deleted user successfully",
+//         data : null
+//     })
+// })
+
+// //---------- user update operation --------------------------//
+// app.patch("/user/:id",async(req,res)=>{
+//     const id = req.params.id;
+//     const {name,username,email,password,role,age} = req.body;
+//     const users = await User.findByIdAndUpdate(id,{
+//         name,
+//         username,
+//         email,
+//         password,
+//         role,
+//         age
+//     });
+//     res.status(201).json({
+//         message: "Successfully updated user info",
+//         data: users
+//     })
 // })
 
 //All books  read
@@ -118,14 +150,46 @@ app.get("/book/:id",async(req,res)=>{
 })
 
 // delete operation
-app.delete("/book/:id",async(req,res)=>{
-    const id = req.params.id;
-    await Book.findByIdAndDelete(id);
+app.delete("/book/:id", upload.single('image'), async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        // Fetch the book data before deleting it
+        const book = await Book.findById(id);
+        console.log(book)
+        if (!book) {
+            return res.status(404).json({
+                message: "Book not found",
+            });
+        }
+        
+        // Delete the book
+        await Book.findByIdAndDelete(id);
 
-res.status(200).json({
-    message: "book deleted successfully",
-})
-})
+        const imgUrl = book.imageUrl;
+        const localHostUrlLength = "http://localhost:3000/".length;
+        const oldImageUrl = imgUrl.slice(localHostUrlLength);
+
+        // Delete the associated image file
+        fs.unlink(`storage/${oldImageUrl}`, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Also the file is deleted");
+            }
+        });
+
+        res.status(200).json({
+            message: "Book deleted successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "An error occurred",
+        });
+    }
+});
+
 
 // ------- update operation ------------
 // app.put("/book/:id",async(req,res)=>{
@@ -138,17 +202,41 @@ res.status(200).json({
 //         })
 //     })
 
-    // using patch method edit the book information 
-app.patch("/book/:id",async(req,res)=>{
+// using patch method edit the book information 
+app.patch("/book/:id",upload.single('image'),async(req,res)=>{
     const id = req.params.id;
     const {bookName,publication, bookPrice, isbnNumber, authorName, publishedAt} = req.body;
+    const oldData = await Book.findById(id);
+    let fileName;
+    if(req.file){
+        // console.log(req.file)
+        // console.log(oldData)
+        const oldImagePath = oldData.imageUrl;
+        console.log(oldImagePath)
+        const localHostUrlLength = "http://localhost:3000/".length;
+        const newOldImagePath = oldImagePath.slice(localHostUrlLength);
+        console.log(newOldImagePath);
+
+        fs.unlink(`storage/${newOldImagePath}`,(err)=>{
+            if(err){
+                console.log(err);
+            }else{
+                console.log("deleted successfully");
+            }
+        })
+        fileName = "http://localhost/3000/" + req.file.filename
+
+
+
+    }
     const book = await Book.findByIdAndUpdate(id,{
         bookName,
         publication,
         bookPrice,
         isbnNumber,
         authorName,
-        publishedAt
+        publishedAt,
+        imageUrl: fileName
     })
     res.status(200).json({
         message: "book updated successfully",
