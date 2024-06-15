@@ -20,7 +20,14 @@ const upload = multer({storage : storage})
 app.use(express.json());
 app.use(express.static("./storage/")); 
 
-// connnection to database 
+// cors package
+const cors = require('cors')
+
+app.use(cors({
+    origin: '*'
+}))
+
+// connection to database 
 connectToDatabase();
 
 //example 

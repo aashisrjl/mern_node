@@ -66,3 +66,16 @@ yo much add your link of database to connectionstring variable
  ## Documentation of apis 
         > https://documenter.getpostman.com/view/35190210/2sA3XJjQCS
 
+        ### Cors package
+        - cors is a package that allows cross-origin resource sharing. It allows a server to indicate any
+        origins (domain, scheme, or port) other than its own from which a cross-origin resource
+        can be requested.
+        - `npm install cors`
+        - const cors = require('cors');
+        - app.use(cors());
+        - app.use(cors({origin: '*'}));
+        - app.use(cors({origin: 'http://localhost:3000'}));
+        - app.use(cors({origin: ['http://localhost:3000', 'http://localhost]}))
+
+        
+
