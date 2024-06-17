@@ -38,11 +38,11 @@ app.get('/',(req,res)=>{
 
 // create a post api 
 app.post("/book",upload.single('image'), async(req,res)=>{
-    let fileName = req.file.filename
+    let fileName
     if(!req.file){
         fileName ="https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=";
     }else{
-        fileName = "http://localhost:3000/" + fileName; 
+        fileName = "http://localhost:3000/" + req.file.filename; 
     }
     const {bookName,publication, bookPrice, isbnNumber, authorName, publishedAt} = req.body;
     await Book.create({
@@ -231,7 +231,7 @@ app.patch("/book/:id",upload.single('image'),async(req,res)=>{
                 console.log("deleted successfully");
             }
         })
-        fileName = "http://localhost/3000/" + req.file.filename
+        fileName = "http://localhost:3000/" + req.file.filename
 
 
 
